@@ -16,9 +16,13 @@ var Moving = false
 
 var CanMove = true
 
+func IsInDialogue():
+	return %"Dialogue Handler".speaking
+
 func handle_movement(_d): # Self explanatory
 	if not CanMove: # For cutscenes and whatnot
-		velocity = Vector2.ZERO
+		velocity.y = lerp(velocity.y, 0.0, FRIC)
+		velocity.x = lerp(velocity.x, 0.0, FRIC)
 		return
 	
 	if Input.is_action_pressed("W"): # Going through each direction and setting movement, not optimal but I like it this way lmao
@@ -46,6 +50,11 @@ func handle_movement(_d): # Self explanatory
 		Moving = false
 
 func handle_camera_movement():
+	if not CanMove:
+		CamPos.position.y = lerp(CamPos.position.y, 0.0, FRIC / 3)
+		CamPos.position.x = lerp(CamPos.position.x, 0.0, FRIC / 3)
+		return
+	
 	if Input.is_action_pressed("W"): # Doing the same as above but for the camera
 		CamPos.position.y = lerp(CamPos.position.y, -SPEED / 8, ACCEL / 4)
 	elif Input.is_action_pressed("S"):
@@ -61,8 +70,20 @@ func handle_camera_movement():
 
 func _physics_process(delta: float) -> void:
 	
+	if IsInDialogue():
+		%Textbox.position.y = lerp(%Textbox.position.y, 0.0, 0.1)
+	else:
+		%Textbox.position.y = lerp(%Textbox.position.y, 140.0, 0.1)
+	
 	handle_camera_movement() # Just organising functions a little
 	
 	handle_movement(delta)
 
 	move_and_slide()
+	
+	if Input.is_key_pressed(KEY_J):
+		StartDialogue()
+
+func StartDialogue(Dialogue : Dictionary = {"Portrait" : ["res://icon.png", "res://icon.png", "res://icon.png"],"Lines" : ["How are you?", "Woah it works", "Baller"],}):
+	%"Dialogue Handler".dialogue = Dialogue
+	%"Dialogue Handler".StartDialogue()
