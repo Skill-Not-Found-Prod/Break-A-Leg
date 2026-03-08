@@ -32,7 +32,6 @@ func handle_movement(_d): # Self explanatory
 		MovingY = false
 	if Input.is_action_pressed("A"):
 		velocity.x = lerp(velocity.x, -SPEED, ACCEL)
-		Sprite.rotation_degrees.x = velocity.x / 80
 		MovingX = true
 	elif Input.is_action_pressed("D"):
 		velocity.x = lerp(velocity.x, SPEED, ACCEL)
